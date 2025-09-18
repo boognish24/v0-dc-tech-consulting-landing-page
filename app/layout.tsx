@@ -52,6 +52,14 @@ export const metadata: Metadata = {
       "Gain clarity and control over your technology costs with our proven 6-step methodology. Helping CIOs, CFOs, and IT Executives make informed decisions.",
     images: ["/images/titlepage.png"],
   },
+  icons: {
+    icon: [
+      { url: "/icon512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: [
+      { url: "/icon512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
   robots: {
     index: true,
     follow: true,
