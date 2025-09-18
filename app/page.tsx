@@ -503,7 +503,7 @@ export default function LandingPage() {
                     className="rounded-md shadow-lg"
                   />
                 </div>
-                <BottomLeadForm />
+                <HeroLeadModal />
               </div>
 
               {/* Right Column - Schedule Consultation */}
