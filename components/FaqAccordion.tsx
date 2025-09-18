@@ -35,15 +35,6 @@ export default function FaqAccordion() {
 
             <AccordionItem value="item-3" className="bg-white mb-4 rounded-md shadow-md border border-[#E0E0E0] overflow-hidden">
               <AccordionTrigger className="text-left font-medium text-[#1A2D44] px-6 py-4 hover:no-underline hover:bg-[#F5F5F5]">
-                Can we implement this framework on our own?
-              </AccordionTrigger>
-              <AccordionContent className="text-[#707070] px-6 pb-4">
-                Yes, the 6-step framework is designed to be implementable by your internal team. However, many organizations choose to leverage our expertise for the initial setup and training, then maintain the system themselves going forward. We offer flexible engagement models to suit your needs.
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4" className="bg-white mb-4 rounded-md shadow-md border border-[#E0E0E0] overflow-hidden">
-              <AccordionTrigger className="text-left font-medium text-[#1A2D44] px-6 py-4 hover:no-underline hover:bg-[#F5F5F5]">
                 What kind of ROI can we expect?
               </AccordionTrigger>
               <AccordionContent className="text-[#707070] px-6 pb-4">
@@ -51,7 +42,7 @@ export default function FaqAccordion() {
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="item-5" className="bg-white mb-4 rounded-md shadow-md border border-[#E0E0E0] overflow-hidden">
+            <AccordionItem value="item-4" className="bg-white mb-4 rounded-md shadow-md border border-[#E0E0E0] overflow-hidden">
               <AccordionTrigger className="text-left font-medium text-[#1A2D44] px-6 py-4 hover:no-underline hover:bg-[#F5F5F5]">
                 What's the first step to get started?
               </AccordionTrigger>
