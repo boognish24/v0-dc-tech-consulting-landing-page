@@ -1,6 +1,6 @@
 import { promises as fs } from "fs"
 import path from "path"
-import { createHmac } from "crypto"
+import { createHmac, timingSafeEqual } from "crypto"
 import { NextResponse } from "next/server"
 
 export const runtime = "nodejs"
@@ -11,14 +11,19 @@ function verify(token: string, secret: string) {
     const parts = decoded.split(".")
     // Allow emails with dots by popping from the end
     if (parts.length < 3) return false
-    const sig = parts.pop()!
-    const expStr = parts.pop()!
+    const sigHex = parts.pop()
+    const expStr = parts.pop()
+    if (!sigHex || !expStr) return false
+
     const email = parts.join(".")
     const exp = Number(expStr)
-    if (!email || !exp || !sig) return false
-    if (Number.isNaN(exp) || exp < Math.floor(Date.now() / 1000)) return false
-    const expected = createHmac("sha256", secret).update(`${email}.${exp}`).digest("hex")
-    return sig === expected
+    if (!email || Number.isNaN(exp) || exp < Math.floor(Date.now() / 1000)) return false
+
+    const expectedHex = createHmac("sha256", secret).update(`${email}.${exp}`).digest("hex")
+    const sigBuf = Buffer.from(sigHex, "hex")
+    const expectedBuf = Buffer.from(expectedHex, "hex")
+    if (sigBuf.length !== expectedBuf.length) return false
+    return timingSafeEqual(sigBuf, expectedBuf)
   } catch {
     return false
   }
@@ -41,8 +46,9 @@ export async function GET(req: Request) {
   }
 
   // Fallback: serve from repository file while migrating
-  const privatePath = path.join(process.cwd(), "private", "dc-tech-6-steps.pdf")
-  const publicPath = path.join(process.cwd(), "public", "dc-tech-6-steps.pdf")
+  const fileName = process.env.GUIDE_FILE_NAME || "dc-tech-6-steps.pdf"
+  const privatePath = path.join(process.cwd(), "private", fileName)
+  const publicPath = path.join(process.cwd(), "public", fileName)
 
   try {
     let file: Buffer

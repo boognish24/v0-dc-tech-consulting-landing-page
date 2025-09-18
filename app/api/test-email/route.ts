@@ -14,7 +14,7 @@ export async function POST() {
 
     const { data, error } = await resend.emails.send({
       from: `DC Tech Consulting <${from}>`,
-      to: "kyle@dctechconsulting.net",
+      to: process.env.TEST_EMAIL_RECIPIENT || "kyle@dctechconsulting.net",
       subject: "test",
       text: "test",
     })

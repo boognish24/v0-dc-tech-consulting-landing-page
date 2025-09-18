@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server"
 import { Resend } from "resend"
 import { GuideDownloadEmail } from "@/app/emails/guide-download"
-import { promises as fs } from "fs"
-import path from "path"
 import { createHmac } from "crypto"
 
 export const runtime = "nodejs"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const BLOCKED = [
+const BLOCKED_DOMAINS = new Set([
   "gmail.com",
   "yahoo.com",
   "outlook.com",
@@ -18,12 +16,12 @@ const BLOCKED = [
   "proton.me",
   "protonmail.com",
   "aol.com",
-]
+])
 
 function isWorkEmail(email: string) {
   const m = email.toLowerCase().match(/@([^@]+)$/)
   const domain = m?.[1] || ""
-  return domain.length > 0 && !BLOCKED.includes(domain)
+  return domain.length > 0 && !BLOCKED_DOMAINS.has(domain)
 }
 
 function makeToken(email: string) {

@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -17,6 +17,7 @@ import { PopupButton, useCalendlyEventListener } from "react-calendly"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Menu, X, Calendar } from "lucide-react"
 import TestimonialSection from "@/components/TestimonialSection"
+import { useLeadForm } from "@/hooks/use-lead-form"
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -29,75 +30,16 @@ export default function LandingPage() {
 
   // Calendly popup (react-calendly handles script loading & popup)
   useCalendlyEventListener({
-    onProfilePageViewed: (e) => console.log("Calendly:", e),
-    onEventTypeViewed: (e) => console.log("Calendly:", e),
-    onDateAndTimeSelected: (e) => console.log("Calendly:", e),
-    onEventScheduled: (e) => console.log("Calendly:", e),
+    onProfilePageViewed: () => {},
+    onEventTypeViewed: () => {},
+    onDateAndTimeSelected: () => {},
+    onEventScheduled: () => {},
   })
 
-  // Lead capture state (hero modal)
+  // Lead capture state
   const [leadDialogOpen, setLeadDialogOpen] = useState(false)
-  const [leadName, setLeadName] = useState("")
-  const [leadEmail, setLeadEmail] = useState("")
-  const [leadLoading, setLeadLoading] = useState(false)
-  const [leadMessage, setLeadMessage] = useState<string | null>(null)
-  const [leadError, setLeadError] = useState<string | null>(null)
-
-  // Lead capture state (bottom form)
-  const [bottomName, setBottomName] = useState("")
-  const [bottomEmail, setBottomEmail] = useState("")
-  const [bottomLoading, setBottomLoading] = useState(false)
-  const [bottomMessage, setBottomMessage] = useState<string | null>(null)
-  const [bottomError, setBottomError] = useState<string | null>(null)
-
-  async function submitLead(payload: { name?: string; email: string }) {
-    const res = await fetch("/api/lead", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-    const data = await res.json().catch(() => ({}))
-    if (!res.ok) {
-      throw new Error(data?.message || "Failed to submit. Please try again.")
-    }
-    return data
-  }
-
-  async function onSubmitHero(e: FormEvent) {
-    e.preventDefault()
-    setLeadLoading(true)
-    setLeadMessage(null)
-    setLeadError(null)
-    try {
-      await submitLead({ name: leadName, email: leadEmail })
-      setLeadMessage("Your 6 Steps Guide is on the way!")
-      setLeadName("")
-      setLeadEmail("")
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Something went wrong"
-      setLeadError(msg)
-    } finally {
-      setLeadLoading(false)
-    }
-  }
-
-  async function onSubmitBottom(e: FormEvent) {
-    e.preventDefault()
-    setBottomLoading(true)
-    setBottomMessage(null)
-    setBottomError(null)
-    try {
-      await submitLead({ name: bottomName, email: bottomEmail })
-      setBottomMessage("Your 6 Steps Guide is on the way!")
-      setBottomName("")
-      setBottomEmail("")
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Something went wrong"
-      setBottomError(msg)
-    } finally {
-      setBottomLoading(false)
-    }
-  }
+  const heroForm = useLeadForm({ source: "hero" })
+  const bottomForm = useLeadForm({ source: "bottom" })
 
   // Updated logos array with new 7-Eleven logo
   const logos = [
@@ -354,15 +296,15 @@ export default function LandingPage() {
                     <DialogHeader>
                       <DialogTitle>Get the 6 Steps Guide</DialogTitle>
                     </DialogHeader>
-                    <form onSubmit={onSubmitHero} className="space-y-4">
+                    <form onSubmit={heroForm.onSubmit} className="space-y-4">
                       <div className="grid gap-2">
                         <Label htmlFor="lead-name">Name</Label>
                         <Input
                           id="lead-name"
                           name="name"
                           placeholder="Your name"
-                          value={leadName}
-                          onChange={(e) => setLeadName(e.target.value)}
+                          value={heroForm.name}
+                          onChange={(e) => heroForm.setName(e.target.value)}
                         />
                       </div>
                       <div className="grid gap-2">
@@ -373,18 +315,18 @@ export default function LandingPage() {
                           type="email"
                           required
                           placeholder="you@company.com"
-                          value={leadEmail}
-                          onChange={(e) => setLeadEmail(e.target.value)}
+                          value={heroForm.email}
+                          onChange={(e) => heroForm.setEmail(e.target.value)}
                         />
                       </div>
-                      <Button type="submit" disabled={leadLoading} className="w-full bg-[#42C5C9] hover:bg-[#2A9B9F]">
-                        {leadLoading ? "Sending..." : "Email Me the Guide"}
+                      <Button type="submit" disabled={heroForm.loading} className="w-full bg-[#42C5C9] hover:bg-[#2A9B9F]">
+                        {heroForm.loading ? "Sending..." : "Email Me the Guide"}
                       </Button>
-                      {leadMessage && (
-                        <p className="text-green-600 text-sm">{leadMessage}</p>
+                      {heroForm.message && (
+                        <p className="text-green-600 text-sm">{heroForm.message}</p>
                       )}
-                      {leadError && (
-                        <p className="text-red-600 text-sm">{leadError}</p>
+                      {heroForm.error && (
+                        <p className="text-red-600 text-sm">{heroForm.error}</p>
                       )}
                     </form>
                   </DialogContent>
@@ -783,13 +725,13 @@ export default function LandingPage() {
                     className="rounded-md shadow-lg"
                   />
                 </div>
-                <form className="flex flex-col gap-4" onSubmit={onSubmitBottom} action="/api/lead" method="post">
+                <form className="flex flex-col gap-4" onSubmit={bottomForm.onSubmit} action="/api/lead" method="post">
                   <Input
                     type="text"
                     name="name"
                     placeholder="Your name"
-                    value={bottomName}
-                    onChange={(e) => setBottomName(e.target.value)}
+                    value={bottomForm.name}
+                    onChange={(e) => bottomForm.setName(e.target.value)}
                     className="bg-white rounded-md px-4 py-3 text-[#1A2D44] placeholder:text-gray-500 border border-gray-300"
                   />
                   <Input
@@ -797,15 +739,15 @@ export default function LandingPage() {
                     name="email"
                     required
                     placeholder="Work email"
-                    value={bottomEmail}
-                    onChange={(e) => setBottomEmail(e.target.value)}
+                    value={bottomForm.email}
+                    onChange={(e) => bottomForm.setEmail(e.target.value)}
                     className="bg-white rounded-md px-4 py-3 text-[#1A2D44] placeholder:text-gray-500 border border-gray-300"
                   />
-                  <Button type="submit" disabled={bottomLoading} className="px-8 py-3 bg-[#42C5C9] hover:bg-[#2A9B9F] text-white">
-                    {bottomLoading ? "Sending..." : "Get 6 Steps"}
+                  <Button type="submit" disabled={bottomForm.loading} className="px-8 py-3 bg-[#42C5C9] hover:bg-[#2A9B9F] text-white">
+                    {bottomForm.loading ? "Sending..." : "Get 6 Steps"}
                   </Button>
-                  {bottomMessage && <p className="text-green-700 text-sm">{bottomMessage}</p>}
-                  {bottomError && <p className="text-red-600 text-sm">{bottomError}</p>}
+                  {bottomForm.message && <p className="text-green-700 text-sm">{bottomForm.message}</p>}
+                  {bottomForm.error && <p className="text-red-600 text-sm">{bottomForm.error}</p>}
                 </form>
               </div>
 
