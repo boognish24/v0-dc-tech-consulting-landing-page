@@ -1,27 +1,84 @@
 import { NextResponse } from "next/server"
+import { Resend } from "resend"
+import { GuideDownloadEmail } from "@/app/emails/guide-download"
+import { createHmac } from "crypto"
+
+export const runtime = "nodejs"
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+const BLOCKED_DOMAINS = new Set([
+  "gmail.com",
+  "yahoo.com",
+  "outlook.com",
+  "hotmail.com",
+  "icloud.com",
+  "proton.me",
+  "protonmail.com",
+  "aol.com",
+])
+
+function isWorkEmail(email: string) {
+  const m = email.toLowerCase().match(/@([^@]+)$/)
+  const domain = m?.[1] || ""
+  return domain.length > 0 && !BLOCKED_DOMAINS.has(domain)
+}
+
+function makeToken(email: string) {
+  if (!process.env.DOWNLOAD_TOKEN_SECRET) throw new Error("Missing DOWNLOAD_TOKEN_SECRET")
+  const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24 // 24h expiry
+  const payload = `${email}.${exp}`
+  const sig = createHmac("sha256", process.env.DOWNLOAD_TOKEN_SECRET).update(payload).digest("hex")
+  return Buffer.from(`${payload}.${sig}`).toString("base64url")
+}
+
+// No attachment needed when delivering via blob link
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData()
-    const email = formData.get("email")
+    const contentType = request.headers.get("content-type") || ""
+    let email = ""
 
-    // In a real implementation, you would:
-    // 1. Validate the email
-    // 2. Store it in your database or CRM
-    // 3. Send the PDF link or trigger an email with the PDF
+    if (contentType.includes("application/json")) {
+      const body = await request.json()
+      email = String(body.email || "").trim()
+    } else {
+      const formData = await request.formData()
+      email = String(formData.get("email") || "").trim()
+    }
 
-    console.log("Lead captured:", email)
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      return NextResponse.json({ success: false, message: "Invalid email" }, { status: 400 })
+    }
+    if (!isWorkEmail(email)) {
+      return NextResponse.json({ success: false, message: "Please use a work email" }, { status: 400 })
+    }
 
-    // For demo purposes, we'll just return a success response
-    // In production, you would integrate with MailerLite, HubSpot, etc.
+    const origin = new URL(request.url).origin
+    const token = makeToken(email)
+    const downloadUrl = `${origin}/api/download?token=${token}`
 
-    return NextResponse.json({
-      success: true,
-      message: "Thank you! Check your email for the PDF.",
-      pdfUrl: "/downloads/6steps.pdf", // This would be a real URL in production
+    const from = process.env.RESEND_FROM
+    if (!from) throw new Error("Missing RESEND_FROM")
+
+    const { error } = await resend.emails.send({
+      from: `DC Tech Consulting <${from}>`,
+      to: email,
+      reply_to: process.env.RESEND_REPLY_TO || "don@dctechconsulting.net",
+      subject: "Your 6 Steps Guide",
+      react: GuideDownloadEmail({ siteUrl: origin, downloadUrl, chatUrl: "mailto:don@dctechconsulting.net" }),
     })
+
+    if (error) {
+      return NextResponse.json({ success: false, message: error.message }, { status: 400 })
+    }
+
+    return NextResponse.json({ success: true, message: "Thank you! Check your email for the PDF." })
   } catch (error) {
     console.error("Error processing lead:", error)
-    return NextResponse.json({ success: false, message: "Something went wrong. Please try again." }, { status: 500 })
+    return NextResponse.json(
+      { success: false, message: "Something went wrong. Please try again." },
+      { status: 500 }
+    )
   }
 }

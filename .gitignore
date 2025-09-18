@@ -25,3 +25,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/docs
+AGENTS.md
+CLAUDE.md
+ 
+# private assets (do not track large binaries)
+private/
+private/

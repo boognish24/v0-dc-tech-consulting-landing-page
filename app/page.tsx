@@ -1,15 +1,45 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { PopupButton, useCalendlyEventListener } from "react-calendly"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Menu, X, Calendar } from "lucide-react"
 import TestimonialSection from "@/components/TestimonialSection"
+import { useLeadForm } from "@/hooks/use-lead-form"
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // Calendly popup root must be resolved on client only
+  const [popupRoot, setPopupRoot] = useState<HTMLElement | null>(null)
+  useEffect(() => {
+    if (typeof document !== "undefined") setPopupRoot(document.body)
+  }, [])
+
+  // Calendly popup (react-calendly handles script loading & popup)
+  useCalendlyEventListener({
+    onProfilePageViewed: () => {},
+    onEventTypeViewed: () => {},
+    onDateAndTimeSelected: () => {},
+    onEventScheduled: () => {},
+  })
+
+  // Lead capture state
+  const [leadDialogOpen, setLeadDialogOpen] = useState(false)
+  const heroForm = useLeadForm({ source: "hero" })
+  const bottomForm = useLeadForm({ source: "bottom" })
 
   // Updated logos array with new 7-Eleven logo
   const logos = [
@@ -44,7 +74,7 @@ export default function LandingPage() {
     {
       num: 4,
       title: "Usage & Capacity Analysis",
-      blurb: "Optimising Your Asset Utilisation",
+      blurb: "Optimizing Your Asset Utilization",
       color: "#3E7CB2", // Blue
     },
     {
@@ -95,7 +125,7 @@ export default function LandingPage() {
     {
       title: "UCaaS / CCaaS",
       subtitle: "Align with hybrid-work needs",
-      blurb: "Align license mix and QOS with hybrid-work user behaviour.",
+      blurb: "Align license mix and QOS with hybrid-work user behavior.",
     },
     {
       title: "Cloud & Colocation",
@@ -181,9 +211,14 @@ export default function LandingPage() {
             </Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Button className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200">
-              Let's Chat
-            </Button>
+            {popupRoot && (
+              <PopupButton
+                url="https://calendly.com/donchester"
+                rootElement={popupRoot}
+                text="Let's Chat"
+                className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200"
+              />
+            )}
             <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -251,9 +286,51 @@ export default function LandingPage() {
                 technology investments.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200">
-                  Get 6 Steps
-                </Button>
+                <Dialog open={leadDialogOpen} onOpenChange={setLeadDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200">
+                      Get 6 Steps
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[480px]">
+                    <DialogHeader>
+                      <DialogTitle>Get the 6 Steps Guide</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={heroForm.onSubmit} className="space-y-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="lead-name">Name</Label>
+                        <Input
+                          id="lead-name"
+                          name="name"
+                          placeholder="Your name"
+                          value={heroForm.name}
+                          onChange={(e) => heroForm.setName(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="lead-email">Work email</Label>
+                        <Input
+                          id="lead-email"
+                          name="email"
+                          type="email"
+                          required
+                          placeholder="you@company.com"
+                          value={heroForm.email}
+                          onChange={(e) => heroForm.setEmail(e.target.value)}
+                        />
+                      </div>
+                      <Button type="submit" disabled={heroForm.loading} className="w-full bg-[#42C5C9] hover:bg-[#2A9B9F]">
+                        {heroForm.loading ? "Sending..." : "Email Me the Guide"}
+                      </Button>
+                      {heroForm.message && (
+                        <p className="text-green-600 text-sm">{heroForm.message}</p>
+                      )}
+                      {heroForm.error && (
+                        <p className="text-red-600 text-sm">{heroForm.error}</p>
+                      )}
+                    </form>
+                  </DialogContent>
+                </Dialog>
                 <Button
                   variant="outline"
                   className="bg-transparent text-white border-white hover:bg-white/10 uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200"
@@ -648,17 +725,29 @@ export default function LandingPage() {
                     className="rounded-md shadow-lg"
                   />
                 </div>
-                <form className="flex flex-col gap-4">
-                  <input
+                <form className="flex flex-col gap-4" onSubmit={bottomForm.onSubmit} action="/api/lead" method="post">
+                  <Input
+                    type="text"
+                    name="name"
+                    placeholder="Your name"
+                    value={bottomForm.name}
+                    onChange={(e) => bottomForm.setName(e.target.value)}
+                    className="bg-white rounded-md px-4 py-3 text-[#1A2D44] placeholder:text-gray-500 border border-gray-300"
+                  />
+                  <Input
                     type="email"
                     name="email"
                     required
                     placeholder="Work email"
-                    className="rounded-md px-4 py-3 text-[#1A2D44] placeholder-gray-500 border border-gray-300"
+                    value={bottomForm.email}
+                    onChange={(e) => bottomForm.setEmail(e.target.value)}
+                    className="bg-white rounded-md px-4 py-3 text-[#1A2D44] placeholder:text-gray-500 border border-gray-300"
                   />
-                  <Button type="submit" className="px-8 py-3 bg-[#42C5C9] hover:bg-[#2A9B9F] text-white">
-                    Get 6 Steps
+                  <Button type="submit" disabled={bottomForm.loading} className="px-8 py-3 bg-[#42C5C9] hover:bg-[#2A9B9F] text-white">
+                    {bottomForm.loading ? "Sending..." : "Get 6 Steps"}
                   </Button>
+                  {bottomForm.message && <p className="text-green-700 text-sm">{bottomForm.message}</p>}
+                  {bottomForm.error && <p className="text-red-600 text-sm">{bottomForm.error}</p>}
                 </form>
               </div>
 
@@ -668,7 +757,14 @@ export default function LandingPage() {
                 <div className="bg-white rounded-lg p-4 h-64 flex flex-col items-center justify-center">
                   <Calendar className="w-12 h-12 text-[#42C5C9] mb-4" />
                   <p className="text-center mb-4">Select a convenient time for a 30-minute discovery call</p>
-                  <Button className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white">Schedule Now</Button>
+                  {popupRoot && (
+                    <PopupButton
+                      url="https://calendly.com/donchester"
+                      rootElement={popupRoot}
+                      text="Schedule Now"
+                      className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white px-4 py-2 rounded-md"
+                    />
+                  )}
                 </div>
               </div>
             </div>
