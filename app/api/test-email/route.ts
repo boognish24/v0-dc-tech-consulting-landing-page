@@ -6,6 +6,9 @@ export const runtime = "nodejs"
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST() {
+  if (process.env.ENABLE_TEST_ROUTES !== "1") {
+    return NextResponse.json({ ok: false, message: "Not Found" }, { status: 404 })
+  }
   try {
     const from = process.env.RESEND_FROM || "hello@dctechconsulting.net"
 
@@ -29,6 +32,8 @@ export async function POST() {
 
 // Optional: allow a manual GET trigger for quick local testing
 export async function GET() {
+  if (process.env.ENABLE_TEST_ROUTES !== "1") {
+    return NextResponse.json({ ok: false, message: "Not Found" }, { status: 404 })
+  }
   return POST()
 }
-

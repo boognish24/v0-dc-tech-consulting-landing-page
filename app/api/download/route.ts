@@ -1,6 +1,7 @@
 import { promises as fs } from "fs"
 import path from "path"
 import { createHmac } from "crypto"
+import { NextResponse } from "next/server"
 
 export const runtime = "nodejs"
 
@@ -8,8 +9,11 @@ function verify(token: string, secret: string) {
   try {
     const decoded = Buffer.from(token, "base64url").toString("utf8")
     const parts = decoded.split(".")
-    if (parts.length !== 3) return false
-    const [email, expStr, sig] = parts
+    // Allow emails with dots by popping from the end
+    if (parts.length < 3) return false
+    const sig = parts.pop()!
+    const expStr = parts.pop()!
+    const email = parts.join(".")
     const exp = Number(expStr)
     if (!email || !exp || !sig) return false
     if (Number.isNaN(exp) || exp < Math.floor(Date.now() / 1000)) return false
@@ -30,7 +34,13 @@ export async function GET(req: Request) {
   const ok = verify(token, process.env.DOWNLOAD_TOKEN_SECRET)
   if (!ok) return new Response("Invalid or expired link", { status: 403 })
 
-  // Prefer private storage; fall back to public if still in transition
+  // If a Blob URL is configured, redirect after verification (Option B)
+  const blobUrl = process.env.GUIDE_BLOB_URL
+  if (blobUrl) {
+    return NextResponse.redirect(blobUrl)
+  }
+
+  // Fallback: serve from repository file while migrating
   const privatePath = path.join(process.cwd(), "private", "dc-tech-6-steps.pdf")
   const publicPath = path.join(process.cwd(), "public", "dc-tech-6-steps.pdf")
 
@@ -53,4 +63,3 @@ export async function GET(req: Request) {
     return new Response("File not found", { status: 404 })
   }
 }
-

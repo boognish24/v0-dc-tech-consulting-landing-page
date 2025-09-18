@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, useState } from "react"
+import { FormEvent, useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,12 @@ import TestimonialSection from "@/components/TestimonialSection"
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // Calendly popup root must be resolved on client only
+  const [popupRoot, setPopupRoot] = useState<HTMLElement | null>(null)
+  useEffect(() => {
+    if (typeof document !== "undefined") setPopupRoot(document.body)
+  }, [])
 
   // Calendly popup (react-calendly handles script loading & popup)
   useCalendlyEventListener({
@@ -263,12 +269,14 @@ export default function LandingPage() {
             </Link>
           </nav>
           <div className="flex items-center gap-4">
-            <PopupButton
-              url="https://calendly.com/donchester"
-              rootElement={document.body}
-              text="Let's Chat"
-              className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200"
-            />
+            {popupRoot && (
+              <PopupButton
+                url="https://calendly.com/donchester"
+                rootElement={popupRoot}
+                text="Let's Chat"
+                className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200"
+              />
+            )}
             <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -807,12 +815,14 @@ export default function LandingPage() {
                 <div className="bg-white rounded-lg p-4 h-64 flex flex-col items-center justify-center">
                   <Calendar className="w-12 h-12 text-[#42C5C9] mb-4" />
                   <p className="text-center mb-4">Select a convenient time for a 30-minute discovery call</p>
-                  <PopupButton
-                    url="https://calendly.com/donchester"
-                    rootElement={document.body}
-                    text="Schedule Now"
-                    className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white px-4 py-2 rounded-md"
-                  />
+                  {popupRoot && (
+                    <PopupButton
+                      url="https://calendly.com/donchester"
+                      rootElement={popupRoot}
+                      text="Schedule Now"
+                      className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white px-4 py-2 rounded-md"
+                    />
+                  )}
                 </div>
               </div>
             </div>

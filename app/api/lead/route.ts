@@ -16,6 +16,7 @@ const BLOCKED = [
   "hotmail.com",
   "icloud.com",
   "proton.me",
+  "protonmail.com",
   "aol.com",
 ]
 
@@ -33,15 +34,7 @@ function makeToken(email: string) {
   return Buffer.from(`${payload}.${sig}`).toString("base64url")
 }
 
-async function readPdf() {
-  const privatePath = path.join(process.cwd(), "private", "dc-tech-6-steps.pdf")
-  const publicPath = path.join(process.cwd(), "public", "dc-tech-6-steps.pdf")
-  try {
-    return await fs.readFile(privatePath)
-  } catch {
-    return await fs.readFile(publicPath)
-  }
-}
+// No attachment needed when delivering via blob link
 
 export async function POST(request: Request) {
   try {
@@ -63,7 +56,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Please use a work email" }, { status: 400 })
     }
 
-    const pdf = await readPdf()
     const origin = new URL(request.url).origin
     const token = makeToken(email)
     const downloadUrl = `${origin}/api/download?token=${token}`
@@ -77,9 +69,6 @@ export async function POST(request: Request) {
       reply_to: process.env.RESEND_REPLY_TO || "don@dctechconsulting.net",
       subject: "Your 6 Steps Guide",
       react: GuideDownloadEmail({ siteUrl: origin, downloadUrl, chatUrl: "mailto:don@dctechconsulting.net" }),
-      attachments: [
-        { filename: "DC-Tech-6-Steps.pdf", content: pdf.toString("base64") },
-      ],
     })
 
     if (error) {
