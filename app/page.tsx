@@ -1,45 +1,48 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { PopupButton, useCalendlyEventListener } from "react-calendly"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Menu, X, Calendar } from "lucide-react"
-import TestimonialSection from "@/components/TestimonialSection"
-import { useLeadForm } from "@/hooks/use-lead-form"
+import { Calendar } from "lucide-react"
+import dynamic from "next/dynamic"
+import NavBarClient from "@/components/NavBarClient"
+import HeroLeadModal from "@/components/HeroLeadModal"
+import ScheduleButton from "@/components/ScheduleButton"
+import BottomLeadForm from "@/components/BottomLeadForm"
+import FaqAccordion from "@/components/FaqAccordion"
+
+// Regenerate static HTML every hour for perf + SEO
+export const revalidate = 3600
+
+// Defer testimonials JS with SSR and a lightweight skeleton
+const TestimonialSection = dynamic(() => import("@/components/TestimonialSection"), {
+  ssr: true,
+  loading: () => (
+    <section className="py-16 md:py-24 bg-[#F5F5F5]">
+      <div className="container">
+        <div className="text-center mb-16">
+          <div className="h-8 w-64 mx-auto bg-gray-200 rounded animate-pulse" />
+          <div className="h-5 w-96 mx-auto mt-4 bg-gray-100 rounded animate-pulse" />
+        </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="bg-white p-8 rounded-md shadow-md">
+              <div className="h-6 w-6 bg-[#e6f7f8] rounded mx-auto mb-4" />
+              <div className="h-20 bg-gray-100 rounded mb-6 animate-pulse" />
+              <div className="flex items-center justify-between">
+                <div className="space-y-2 w-1/2">
+                  <div className="h-4 bg-gray-100 rounded" />
+                  <div className="h-3 w-2/3 bg-gray-100 rounded" />
+                </div>
+                <div className="h-10 w-20 bg-gray-100 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  ),
+})
 
 export default function LandingPage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-  // Calendly popup root must be resolved on client only
-  const [popupRoot, setPopupRoot] = useState<HTMLElement | null>(null)
-  useEffect(() => {
-    if (typeof document !== "undefined") setPopupRoot(document.body)
-  }, [])
-
-  // Calendly popup (react-calendly handles script loading & popup)
-  useCalendlyEventListener({
-    onProfilePageViewed: () => {},
-    onEventTypeViewed: () => {},
-    onDateAndTimeSelected: () => {},
-    onEventScheduled: () => {},
-  })
-
-  // Lead capture state
-  const [leadDialogOpen, setLeadDialogOpen] = useState(false)
-  const heroForm = useLeadForm({ source: "hero" })
-  const bottomForm = useLeadForm({ source: "bottom" })
 
   // Updated logos array with new 7-Eleven logo
   const logos = [
@@ -165,109 +168,7 @@ export default function LandingPage() {
 
   return (
     <div className="flex min-h-screen flex-col font-sans">
-      {/* Navigation Bar */}
-      <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#1A2D44]">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/images/dc-logo-transparent.png"
-              alt="DC Tech Consulting Logo"
-              width={220}
-              height={48}
-              className="h-12 w-auto"
-              priority
-            />
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link
-              href="#methodology"
-              className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-            >
-              Methodology
-            </Link>
-            <Link
-              href="#help"
-              className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-            >
-              How We Help
-            </Link>
-            <Link
-              href="#about"
-              className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-            >
-              About
-            </Link>
-            <Link
-              href="#testimonials"
-              className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-            >
-              Testimonials
-            </Link>
-            <Link
-              href="#faq"
-              className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-            >
-              FAQ
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            {popupRoot && (
-              <PopupButton
-                url="https://calendly.com/donchester"
-                rootElement={popupRoot}
-                text="Let's Chat"
-                className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200"
-              />
-            )}
-            <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-[#1A2D44] border-t border-white/10 py-4">
-            <div className="container flex flex-col space-y-4">
-              <Link
-                href="#methodology"
-                className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Methodology
-              </Link>
-              <Link
-                href="#help"
-                className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                How We Help
-              </Link>
-              <Link
-                href="#about"
-                className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="#testimonials"
-                className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Testimonials
-              </Link>
-              <Link
-                href="#faq"
-                className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                FAQ
-              </Link>
-            </div>
-          </div>
-        )}
-      </header>
+      <NavBarClient />
 
       <main className="flex-1">
         {/* Updated Hero Section with higher positioned guide stack */}
@@ -286,51 +187,7 @@ export default function LandingPage() {
                 technology investments.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Dialog open={leadDialogOpen} onOpenChange={setLeadDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200">
-                      Get 6 Steps
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[480px]">
-                    <DialogHeader>
-                      <DialogTitle>Get the 6 Steps Guide</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={heroForm.onSubmit} className="space-y-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="lead-name">Name</Label>
-                        <Input
-                          id="lead-name"
-                          name="name"
-                          placeholder="Your name"
-                          value={heroForm.name}
-                          onChange={(e) => heroForm.setName(e.target.value)}
-                        />
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="lead-email">Work email</Label>
-                        <Input
-                          id="lead-email"
-                          name="email"
-                          type="email"
-                          required
-                          placeholder="you@company.com"
-                          value={heroForm.email}
-                          onChange={(e) => heroForm.setEmail(e.target.value)}
-                        />
-                      </div>
-                      <Button type="submit" disabled={heroForm.loading} className="w-full bg-[#42C5C9] hover:bg-[#2A9B9F]">
-                        {heroForm.loading ? "Sending..." : "Email Me the Guide"}
-                      </Button>
-                      {heroForm.message && (
-                        <p className="text-green-600 text-sm">{heroForm.message}</p>
-                      )}
-                      {heroForm.error && (
-                        <p className="text-red-600 text-sm">{heroForm.error}</p>
-                      )}
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <HeroLeadModal />
                 <Button
                   variant="outline"
                   className="bg-transparent text-white border-white hover:bg-white/10 uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200"
@@ -348,6 +205,8 @@ export default function LandingPage() {
                   alt="6 Steps guide cover"
                   width={312}
                   height={420}
+                  priority
+                  sizes="(min-width: 768px) 312px, 70vw"
                   className="page page-1 absolute top-0 left-0 w-full shadow-lg rounded-md transition-transform duration-350 ease-in-out z-30"
                 />
                 <Image
@@ -355,6 +214,7 @@ export default function LandingPage() {
                   alt="Step 2: Vendor Invoice & Contract Review"
                   width={312}
                   height={420}
+                  sizes="(min-width: 768px) 312px, 70vw"
                   className="page page-2 absolute top-0 left-0 w-full shadow-lg rounded-md transition-transform duration-350 ease-in-out z-20"
                 />
                 <Image
@@ -362,6 +222,7 @@ export default function LandingPage() {
                   alt="Step 4: Usage & Capacity Analysis"
                   width={312}
                   height={420}
+                  sizes="(min-width: 768px) 312px, 70vw"
                   className="page page-3 absolute top-0 left-0 w-full shadow-lg rounded-md transition-transform duration-350 ease-in-out z-10"
                 />
               </div>
@@ -384,6 +245,7 @@ export default function LandingPage() {
                     alt={logo.alt}
                     width={120}
                     height={60}
+                    unoptimized
                     className="inline-block h-[60px] w-auto object-contain"
                   />
                 ))}
@@ -623,91 +485,7 @@ export default function LandingPage() {
         <TestimonialSection testimonials={testimonials} />
 
         {/* FAQ Section */}
-        <section id="faq" className="py-16 md:py-24 bg-white">
-          <div className="container">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-semibold mb-4 text-[#1A2D44]">Frequently Asked Questions</h2>
-              <p className="text-xl text-[#707070] max-w-3xl mx-auto">
-                Get answers to common questions about our technology cost management services
-              </p>
-            </div>
-
-            <div className="max-w-3xl mx-auto">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem
-                  value="item-1"
-                  className="bg-white mb-4 rounded-md shadow-md border border-[#E0E0E0] overflow-hidden"
-                >
-                  <AccordionTrigger className="text-left font-medium text-[#1A2D44] px-6 py-4 hover:no-underline hover:bg-[#F5F5F5]">
-                    Who is this service best suited for?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-[#707070] px-6 pb-4">
-                    Our methodology is specifically designed for medium to large multi-location organizations with
-                    complex technology environments. It's particularly valuable for CIOs, CFOs, and IT executives who
-                    need clear visibility into their technology costs and contractual obligations.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem
-                  value="item-2"
-                  className="bg-white mb-4 rounded-md shadow-md border border-[#E0E0E0] overflow-hidden"
-                >
-                  <AccordionTrigger className="text-left font-medium text-[#1A2D44] px-6 py-4 hover:no-underline hover:bg-[#F5F5F5]">
-                    How long does the implementation process take?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-[#707070] px-6 pb-4">
-                    The initial implementation typically takes 4-8 weeks, depending on the size and complexity of your
-                    organization. However, you'll start seeing valuable insights within the first few weeks as we begin
-                    analyzing your accounts payable data and vendor invoices.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem
-                  value="item-3"
-                  className="bg-white mb-4 rounded-md shadow-md border border-[#E0E0E0] overflow-hidden"
-                >
-                  <AccordionTrigger className="text-left font-medium text-[#1A2D44] px-6 py-4 hover:no-underline hover:bg-[#F5F5F5]">
-                    Can we implement this framework on our own?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-[#707070] px-6 pb-4">
-                    Yes, the 6-step framework is designed to be implementable by your internal team. However, many
-                    organizations choose to leverage our expertise for the initial setup and training, then maintain the
-                    system themselves going forward. We offer flexible engagement models to suit your needs.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem
-                  value="item-4"
-                  className="bg-white mb-4 rounded-md shadow-md border border-[#E0E0E0] overflow-hidden"
-                >
-                  <AccordionTrigger className="text-left font-medium text-[#1A2D44] px-6 py-4 hover:no-underline hover:bg-[#F5F5F5]">
-                    What kind of ROI can we expect?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-[#707070] px-6 pb-4">
-                    Most clients identify cost-saving opportunities of 15-30% of their technology spend within the first
-                    3 months. Beyond direct cost savings, the improved visibility and decision-making capabilities
-                    typically lead to better technology investments and reduced waste over time.
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem
-                  value="item-5"
-                  className="bg-white mb-4 rounded-md shadow-md border border-[#E0E0E0] overflow-hidden"
-                >
-                  <AccordionTrigger className="text-left font-medium text-[#1A2D44] px-6 py-4 hover:no-underline hover:bg-[#F5F5F5]">
-                    What's the first step to get started?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-[#707070] px-6 pb-4">
-                    The first step is to schedule a 30-minute introduction call where we'll review the framework and
-                    discuss how it applies to your specific situation. After that, you can decide whether to implement
-                    it on your own or with our assistance. There's no obligation, and you'll gain valuable insights just
-                    from the initial conversation.
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
-          </div>
-        </section>
+        <FaqAccordion />
 
         {/* Updated Dual-CTA Section with neutral background */}
         <section className="py-20 bg-[#F5F5F5] text-[#1A2D44]">
@@ -725,30 +503,7 @@ export default function LandingPage() {
                     className="rounded-md shadow-lg"
                   />
                 </div>
-                <form className="flex flex-col gap-4" onSubmit={bottomForm.onSubmit} action="/api/lead" method="post">
-                  <Input
-                    type="text"
-                    name="name"
-                    placeholder="Your name"
-                    value={bottomForm.name}
-                    onChange={(e) => bottomForm.setName(e.target.value)}
-                    className="bg-white rounded-md px-4 py-3 text-[#1A2D44] placeholder:text-gray-500 border border-gray-300"
-                  />
-                  <Input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="Work email"
-                    value={bottomForm.email}
-                    onChange={(e) => bottomForm.setEmail(e.target.value)}
-                    className="bg-white rounded-md px-4 py-3 text-[#1A2D44] placeholder:text-gray-500 border border-gray-300"
-                  />
-                  <Button type="submit" disabled={bottomForm.loading} className="px-8 py-3 bg-[#42C5C9] hover:bg-[#2A9B9F] text-white">
-                    {bottomForm.loading ? "Sending..." : "Get 6 Steps"}
-                  </Button>
-                  {bottomForm.message && <p className="text-green-700 text-sm">{bottomForm.message}</p>}
-                  {bottomForm.error && <p className="text-red-600 text-sm">{bottomForm.error}</p>}
-                </form>
+                <BottomLeadForm />
               </div>
 
               {/* Right Column - Schedule Consultation */}
@@ -757,14 +512,7 @@ export default function LandingPage() {
                 <div className="bg-white rounded-lg p-4 h-64 flex flex-col items-center justify-center">
                   <Calendar className="w-12 h-12 text-[#42C5C9] mb-4" />
                   <p className="text-center mb-4">Select a convenient time for a 30-minute discovery call</p>
-                  {popupRoot && (
-                    <PopupButton
-                      url="https://calendly.com/donchester"
-                      rootElement={popupRoot}
-                      text="Schedule Now"
-                      className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white px-4 py-2 rounded-md"
-                    />
-                  )}
+                  <ScheduleButton text="Schedule Now" />
                 </div>
               </div>
             </div>

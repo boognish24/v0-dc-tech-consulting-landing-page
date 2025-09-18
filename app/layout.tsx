@@ -10,6 +10,8 @@ const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-montserrat",
+  display: "swap",
+  preload: true,
 })
 
 const openSans = Open_Sans({
@@ -17,6 +19,8 @@ const openSans = Open_Sans({
   weight: ["400", "600"],
   style: ["normal", "italic"],
   variable: "--font-open-sans",
+  display: "swap",
+  preload: true,
 })
 
 export const metadata: Metadata = {

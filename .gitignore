@@ -33,3 +33,8 @@ CLAUDE.md
 # private assets (do not track large binaries)
 private/
 private/
+
+# Local only
+scripts/
+blob plan.md
+
