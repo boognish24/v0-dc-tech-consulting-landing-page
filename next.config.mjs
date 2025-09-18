@@ -6,9 +6,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  images: {
-    unoptimized: true,
-  },
+  // Enable Next.js image optimization (remove unoptimized flag)
 }
 
 export default nextConfig
