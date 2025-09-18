@@ -23,11 +23,51 @@ const openSans = Open_Sans({
   preload: true,
 })
 
+const SITE_URL = process.env.SITE_URL || "http://localhost:3000"
+
 export const metadata: Metadata = {
   title: "DC Tech Consulting - Technology Cost Management Experts",
   description:
     "Gain clarity and control over your technology costs with our proven 6-step methodology. Helping CIOs, CFOs, and IT Executives make informed decisions.",
-    generator: 'v0.dev'
+  generator: "v0.dev",
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "DC Tech Consulting - Technology Cost Management Experts",
+    description:
+      "Gain clarity and control over your technology costs with our proven 6-step methodology. Helping CIOs, CFOs, and IT Executives make informed decisions.",
+    url: SITE_URL,
+    siteName: "DC Tech Consulting",
+    images: [
+      {
+        url: "/images/titlepage.png",
+        width: 1200,
+        height: 630,
+        alt: "DC Tech 6 Steps Guide",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DC Tech Consulting - Technology Cost Management Experts",
+    description:
+      "Gain clarity and control over your technology costs with our proven 6-step methodology. Helping CIOs, CFOs, and IT Executives make informed decisions.",
+    images: ["/images/titlepage.png"],
+  },
+  icons: {
+    icon: [
+      { url: "/icon512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: [
+      { url: "/icon512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({
