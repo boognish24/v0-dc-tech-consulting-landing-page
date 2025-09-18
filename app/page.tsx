@@ -187,7 +187,7 @@ export default function LandingPage() {
                 technology investments.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <BottomLeadForm />
+                <HeroLeadModal />
                 <Button
                   variant="outline"
                   className="bg-transparent text-white border-white hover:bg-white/10 uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200"
@@ -503,7 +503,7 @@ export default function LandingPage() {
                     className="rounded-md shadow-lg"
                   />
                 </div>
-                <HeroLeadModal />
+                <BottomLeadForm />
               </div>
 
               {/* Right Column - Schedule Consultation */}
