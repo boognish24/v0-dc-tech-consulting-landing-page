@@ -50,16 +50,9 @@ export function GuideDownloadEmail({
               />
             </Section>
 
-            {/* Stacked buttons - much more reliable than side-by-side */}
             <Section style={buttonSection}>
               <Button style={primaryBtn} href={downloadUrl}>
                 Download the Guide
-              </Button>
-            </Section>
-
-            <Section style={buttonSection}>
-              <Button style={secondaryBtn} href={chatUrl}>
-                Let's Chat
               </Button>
             </Section>
           </Section>
@@ -166,19 +159,6 @@ const buttonSection = {
 
 const primaryBtn = {
   backgroundColor: "#42C5C9",
-  borderRadius: "6px",
-  color: "#ffffff",
-  display: "inline-block",
-  fontFamily: "Arial, sans-serif",
-  fontSize: "16px",
-  fontWeight: 600 as const,
-  padding: "14px 32px",
-  textDecoration: "none",
-  textAlign: "center" as const,
-}
-
-const secondaryBtn = {
-  backgroundColor: "#1A2D44",
   borderRadius: "6px",
   color: "#ffffff",
   display: "inline-block",
