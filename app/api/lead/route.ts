@@ -132,7 +132,7 @@ export async function POST(request: Request) {
       from: `DC Tech Consulting <${from}>`,
       to: email,
       reply_to: process.env.RESEND_REPLY_TO || "don@dctechconsulting.net",
-      subject: "Your 6 Steps Guide",
+      subject: "Your Information Technology Inventory Playbook",
       react: GuideDownloadEmail({ siteUrl: origin, downloadUrl, chatUrl: "mailto:don@dctechconsulting.net" }),
     })
 

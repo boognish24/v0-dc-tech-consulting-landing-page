@@ -33,7 +33,7 @@ export function useLeadForm(_opts: LeadFormOptions = {}) {
     setError(null)
     try {
       await submitLead({ name, email })
-      setMessage("Your 6 Steps Guide is on the way!")
+      setMessage("Your IT Inventory Playbook is on the way!")
       setName("")
       setEmail("")
     } catch (err) {
