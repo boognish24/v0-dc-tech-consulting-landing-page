@@ -20,7 +20,7 @@ export function GuideDownloadEmail({
   return (
     <Html>
       <Head />
-      <Preview>Your DC Tech 6 Steps Guide is ready</Preview>
+      <Preview>Your Information Technology Inventory Playbook</Preview>
 
       <Body style={body}>
         {/* Wrapper container for consistent 600px width */}
@@ -38,13 +38,14 @@ export function GuideDownloadEmail({
 
           {/* Main content area */}
           <Section style={content}>
-            <Heading style={h1}>Your 6 Steps Guide is Ready</Heading>
-            <Text style={subhead}>Gain clarity and control over your technology costs.</Text>
+            <Heading style={h1}>Your Information Technology Inventory Playbook</Heading>
+
+            <Text style={bodyText}>Here's your copy of the IT Inventory Playbook.</Text>
 
             <Section style={imageSection}>
               <Img
                 src={`${siteUrl}/images/titlepage.png`}
-                alt="6 Steps Guide Cover"
+                alt="IT Inventory Playbook Cover"
                 width="320"
                 style={guideImage}
               />
@@ -52,14 +53,22 @@ export function GuideDownloadEmail({
 
             <Section style={buttonSection}>
               <Button style={primaryBtn} href={downloadUrl}>
-                Download the Guide
+                Download the Playbook
               </Button>
             </Section>
+
+            <Text style={bodyText}>
+              This playbook contains a 6-step process to help you precisely document your assets, their locations, costs, and vital contractual details. Establishing this baseline will simplify decision-making, reduce errors, and prevent overspending.
+            </Text>
+
+            <Text style={bodyText}>
+              For assistance with data gathering and summarization, I offer a complimentary Data Gathering, Analysis, and Recommendations Report, available upon request.
+            </Text>
           </Section>
 
           {/* Footer */}
           <Section style={footer}>
-            <Text style={footerText}>Best regards,</Text>
+            <Text style={signoff}>Best,</Text>
             <Text style={signature}>
               <strong>Don Chester</strong>
               <br />
@@ -123,19 +132,19 @@ const content = {
 const h1 = {
   color: "#1A2D44",
   fontFamily: "Arial, sans-serif",
-  fontSize: "28px",
+  fontSize: "26px",
   fontWeight: 700 as const,
-  lineHeight: "34px",
-  margin: "0 0 8px 0",
+  lineHeight: "32px",
+  margin: "0 0 16px 0",
   textAlign: "center" as const,
 }
 
-const subhead = {
-  color: "#707070",
+const bodyText = {
+  color: "#333333",
   fontSize: "16px",
-  lineHeight: "24px",
-  margin: "0 0 24px 0",
-  textAlign: "center" as const,
+  lineHeight: "26px",
+  margin: "0 0 16px 0",
+  textAlign: "left" as const,
 }
 
 // Guide image
@@ -174,20 +183,20 @@ const primaryBtn = {
 const footer = {
   backgroundColor: "#ffffff",
   padding: "24px 40px",
-  textAlign: "center" as const,
+  textAlign: "left" as const,
 }
 
-const footerText = {
-  color: "#999999",
-  fontSize: "14px",
-  margin: "0 0 8px 0",
+const signoff = {
+  color: "#333333",
+  fontSize: "16px",
+  margin: "0 0 4px 0",
 }
 
 const signature = {
   color: "#1A2D44",
-  fontSize: "14px",
-  lineHeight: "20px",
-  margin: "0 0 12px 0",
+  fontSize: "16px",
+  lineHeight: "22px",
+  margin: "0 0 16px 0",
 }
 
 const footerLink = {
