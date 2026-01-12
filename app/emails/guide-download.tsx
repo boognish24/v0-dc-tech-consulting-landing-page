@@ -10,8 +10,6 @@ import {
   Preview,
   Section,
   Text,
-  Column,
-  Row,
 } from "@react-email/components"
 
 export function GuideDownloadEmail({
@@ -23,98 +21,204 @@ export function GuideDownloadEmail({
     <Html>
       <Head />
       <Preview>Your DC Tech 6 Steps Guide is ready</Preview>
+
       <Body style={body}>
-        {/* Header Banner */}
-        <Section style={header}>
-          <Container style={headerContainer}>
+        {/* Wrapper container for consistent 600px width */}
+        <Container style={wrapper}>
+
+          {/* Header with logo */}
+          <Section style={header}>
             <Img
               src={`${siteUrl}/images/dc-tech-logo.png`}
               width="600"
               alt="DC Tech Consulting"
               style={logo}
             />
-          </Container>
-        </Section>
+          </Section>
 
-        {/* Main Card */}
-        <Container style={card}>
-          <Section style={inner}>
+          {/* Main content area */}
+          <Section style={content}>
             <Heading style={h1}>Your 6 Steps Guide is Ready</Heading>
             <Text style={subhead}>Gain clarity and control over your technology costs.</Text>
 
-            <Section style={imageWrap}>
+            <Section style={imageSection}>
               <Img
                 src={`${siteUrl}/images/titlepage.png`}
                 alt="6 Steps Guide Cover"
-                width="420"
-                height="560"
+                width="320"
                 style={guideImage}
               />
             </Section>
 
-            <Section style={ctaSection}>
-              <Row>
-                <Column style={buttonColumn}>
-                  <Button style={primaryBtn} href={downloadUrl}>Download the Guide</Button>
-                </Column>
-                <Column style={buttonColumn}>
-                  <Button style={secondaryBtn} href={chatUrl}>Let's Chat</Button>
-                </Column>
-              </Row>
+            {/* Stacked buttons - much more reliable than side-by-side */}
+            <Section style={buttonSection}>
+              <Button style={primaryBtn} href={downloadUrl}>
+                Download the Guide
+              </Button>
+            </Section>
+
+            <Section style={buttonSection}>
+              <Button style={secondaryBtn} href={chatUrl}>
+                Let's Chat
+              </Button>
             </Section>
           </Section>
-        </Container>
 
-        {/* Footer */}
-        <Section style={footer}>
-          <Text style={footerText}>Best regards,</Text>
-          <Text style={signature}>
-            <strong>Don Chester</strong><br />
-            DC Tech Consulting • <Link href={chatUrl} style={footerLink}>{chatUrl.replace("mailto:", "")}</Link>
-          </Text>
-          <Text style={copy}>© {new Date().getFullYear()} DC Technology Consulting, LLC.</Text>
-        </Section>
+          {/* Footer */}
+          <Section style={footer}>
+            <Text style={footerText}>Best regards,</Text>
+            <Text style={signature}>
+              <strong>Don Chester</strong>
+              <br />
+              DC Tech Consulting •{" "}
+              <Link href={chatUrl} style={footerLink}>
+                {chatUrl.replace("mailto:", "")}
+              </Link>
+            </Text>
+            <Text style={copy}>
+              © {new Date().getFullYear()} DC Technology Consulting, LLC.
+            </Text>
+          </Section>
+
+        </Container>
       </Body>
     </Html>
   )
 }
 
-/* Styles */
+/* ============================================
+   STYLES - Email-safe, tested patterns
+   ============================================ */
+
+// Body background - sets the outer "page" color
 const body = {
   backgroundColor: "#f4f4f4",
-  fontFamily: "'Open Sans', Arial, sans-serif",
+  fontFamily: "Arial, sans-serif",
   margin: "0",
-  padding: "20px 0",
+  padding: "0",
 }
 
-const header = { backgroundColor: "#ffffff", padding: "0" }
-const headerContainer = { maxWidth: "600px", margin: "0 auto", textAlign: "center" as const }
-const logo = { display: "block", margin: "0 auto", width: "100%", maxWidth: "600px", height: "auto" }
-
-const card = {
+// Master wrapper - everything inside this is 600px
+const wrapper = {
   backgroundColor: "#ffffff",
-  borderRadius: "12px",
-  margin: "32px auto",
+  margin: "0 auto",
+  width: "600px",
   maxWidth: "600px",
-  overflow: "hidden",
-  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
 }
 
-const inner = { maxWidth: "540px", margin: "0 auto", padding: "20px 28px" }
-const h1 = { color: "#1A2D44", fontFamily: "Montserrat, Arial, sans-serif", fontSize: "36px", fontWeight: 700, margin: "0 0 6px", lineHeight: "40px", textAlign: "center" as const }
-const subhead = { color: "#707070", fontSize: "16px", lineHeight: "22px", margin: "0 0 16px", textAlign: "center" as const }
-const imageWrap = { margin: "20px 0", textAlign: "center" as const }
-const guideImage = { display: "block", margin: "0 auto", borderRadius: "14px", boxShadow: "0 8px 24px rgba(26,45,68,0.15)" }
+// Header section
+const header = {
+  backgroundColor: "#1A2D44",
+  padding: "0",
+  textAlign: "center" as const,
+}
 
-const ctaSection = { margin: "24px 0 0", textAlign: "center" as const }
-const buttonColumn = { width: "50%", textAlign: "center" as const, padding: "0 6px" }
-const primaryBtn = { backgroundColor: "#42C5C9", color: "#ffffff", borderRadius: "8px", padding: "14px 28px", textDecoration: "none", display: "inline-block", fontWeight: 700, fontFamily: "'Open Sans', Arial, sans-serif" }
-const secondaryBtn = { backgroundColor: "#1A2D44", color: "#ffffff", borderRadius: "8px", padding: "14px 24px", textDecoration: "none", display: "inline-block", fontWeight: 700, fontFamily: "'Open Sans', Arial, sans-serif" }
+const logo = {
+  display: "block",
+  width: "100%",
+  maxWidth: "600px",
+  height: "auto",
+}
 
-const footer = { padding: "28px 20px", backgroundColor: "#f5f5f5", textAlign: "center" as const, maxWidth: "600px", margin: "0 auto" }
-const footerText = { color: "#999999", fontSize: "14px", margin: "0 0 8px" }
-const signature = { color: "#1A2D44", fontSize: "14px", lineHeight: "20px", margin: "0 0 12px" }
-const footerLink = { color: "#42C5C9", textDecoration: "none" }
-const copy = { color: "#999999", fontSize: "12px", margin: "0" }
+// Main content
+const content = {
+  backgroundColor: "#ffffff",
+  padding: "32px 40px",
+  textAlign: "center" as const,
+}
+
+const h1 = {
+  color: "#1A2D44",
+  fontFamily: "Arial, sans-serif",
+  fontSize: "28px",
+  fontWeight: 700 as const,
+  lineHeight: "34px",
+  margin: "0 0 8px 0",
+  textAlign: "center" as const,
+}
+
+const subhead = {
+  color: "#707070",
+  fontSize: "16px",
+  lineHeight: "24px",
+  margin: "0 0 24px 0",
+  textAlign: "center" as const,
+}
+
+// Guide image
+const imageSection = {
+  textAlign: "center" as const,
+  padding: "0 0 24px 0",
+}
+
+const guideImage = {
+  display: "block",
+  margin: "0 auto",
+  borderRadius: "8px",
+  border: "1px solid #e0e0e0",
+}
+
+// Buttons - stacked for reliability
+const buttonSection = {
+  textAlign: "center" as const,
+  padding: "8px 0",
+}
+
+const primaryBtn = {
+  backgroundColor: "#42C5C9",
+  borderRadius: "6px",
+  color: "#ffffff",
+  display: "inline-block",
+  fontFamily: "Arial, sans-serif",
+  fontSize: "16px",
+  fontWeight: 600 as const,
+  padding: "14px 32px",
+  textDecoration: "none",
+  textAlign: "center" as const,
+}
+
+const secondaryBtn = {
+  backgroundColor: "#1A2D44",
+  borderRadius: "6px",
+  color: "#ffffff",
+  display: "inline-block",
+  fontFamily: "Arial, sans-serif",
+  fontSize: "16px",
+  fontWeight: 600 as const,
+  padding: "14px 32px",
+  textDecoration: "none",
+  textAlign: "center" as const,
+}
+
+// Footer
+const footer = {
+  backgroundColor: "#f4f4f4",
+  padding: "24px 40px",
+  textAlign: "center" as const,
+}
+
+const footerText = {
+  color: "#999999",
+  fontSize: "14px",
+  margin: "0 0 8px 0",
+}
+
+const signature = {
+  color: "#1A2D44",
+  fontSize: "14px",
+  lineHeight: "20px",
+  margin: "0 0 12px 0",
+}
+
+const footerLink = {
+  color: "#42C5C9",
+  textDecoration: "none",
+}
+
+const copy = {
+  color: "#999999",
+  fontSize: "12px",
+  margin: "0",
+}
 
 export default GuideDownloadEmail
