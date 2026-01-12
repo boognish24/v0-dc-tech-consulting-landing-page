@@ -90,9 +90,9 @@ export function GuideDownloadEmail({
    STYLES - Email-safe, tested patterns
    ============================================ */
 
-// Body background - sets the outer "page" color
+// Body background - white to blend seamlessly with content
 const body = {
-  backgroundColor: "#f4f4f4",
+  backgroundColor: "#ffffff",
   fontFamily: "Arial, sans-serif",
   margin: "0",
   padding: "0",
@@ -192,7 +192,7 @@ const secondaryBtn = {
 
 // Footer
 const footer = {
-  backgroundColor: "#f4f4f4",
+  backgroundColor: "#ffffff",
   padding: "24px 40px",
   textAlign: "center" as const,
 }
