@@ -1,17 +1,26 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, lazy, Suspense } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
-import { PopupButton } from "react-calendly"
+
+// Lazy-load Calendly to avoid blocking initial render
+const PopupButton = lazy(() => import("react-calendly").then(mod => ({ default: mod.PopupButton })))
 
 export default function NavBarClient() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [popupRoot, setPopupRoot] = useState<HTMLElement | null>(null)
+  const [calendlyReady, setCalendlyReady] = useState(false)
+
   useEffect(() => {
-    if (typeof document !== "undefined") setPopupRoot(document.body)
+    if (typeof document !== "undefined") {
+      setPopupRoot(document.body)
+      // Delay Calendly load until after initial paint
+      const timer = setTimeout(() => setCalendlyReady(true), 100)
+      return () => clearTimeout(timer)
+    }
   }, [])
 
   return (
@@ -35,13 +44,23 @@ export default function NavBarClient() {
           <Link href="#faq" className="text-base font-medium text-white hover:text-[#7FD9DB] transition-colors duration-200">FAQ</Link>
         </nav>
         <div className="flex items-center gap-4">
-          {popupRoot && (
-            <PopupButton
-              url="https://calendly.com/donchester"
-              rootElement={popupRoot}
-              text="Let's Chat"
-              className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200 rounded-md"
-            />
+          {popupRoot && calendlyReady ? (
+            <Suspense fallback={
+              <Button className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200">
+                Let's Chat
+              </Button>
+            }>
+              <PopupButton
+                url="https://calendly.com/donchester"
+                rootElement={popupRoot}
+                text="Let's Chat"
+                className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200 rounded-md"
+              />
+            </Suspense>
+          ) : (
+            <Button className="bg-[#42C5C9] hover:bg-[#2A9B9F] text-white uppercase font-medium text-sm px-6 py-3 h-auto transition-colors duration-200">
+              Let's Chat
+            </Button>
           )}
           <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

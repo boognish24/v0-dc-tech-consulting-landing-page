@@ -8,6 +8,7 @@ import HeroLeadModal from "@/components/HeroLeadModal"
 import ScheduleButton from "@/components/ScheduleButton"
 import BottomLeadForm from "@/components/BottomLeadForm"
 import FaqAccordion from "@/components/FaqAccordion"
+import LogoCarouselSeamless from "@/components/LogoCarouselSeamless"
 
 // Regenerate static HTML every hour for perf + SEO
 export const revalidate = 3600
@@ -236,21 +237,7 @@ export default function LandingPage() {
             <h2 className="text-center text-sm md:text-base font-medium text-[#707070] mb-8">
               Refined with collaboration from leaders at:
             </h2>
-            <div className="relative overflow-hidden">
-              <div className="flex gap-16 animate-scroll-faster whitespace-nowrap">
-                {[...logos, ...logos].map((logo, i) => (
-                  <Image
-                    key={i}
-                    src={logo.src || "/placeholder.svg"}
-                    alt={logo.alt}
-                    width={120}
-                    height={60}
-                    unoptimized
-                    className="inline-block h-[60px] w-auto object-contain"
-                  />
-                ))}
-              </div>
-            </div>
+            <LogoCarouselSeamless logos={logos} speed={50} />
           </div>
         </section>
 
@@ -444,10 +431,11 @@ export default function LandingPage() {
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <Image
-                  src="/images/don-chester.png"
+                  src="/images/don-chester.jpg"
                   alt="Don Chester"
                   width={400}
                   height={500}
+                  loading="lazy"
                   className="rounded-md shadow-lg mx-auto md:mx-0"
                 />
               </div>
@@ -500,6 +488,7 @@ export default function LandingPage() {
                     alt="6 Steps guide cover"
                     width={200}
                     height={270}
+                    loading="lazy"
                     className="rounded-md shadow-lg"
                   />
                 </div>

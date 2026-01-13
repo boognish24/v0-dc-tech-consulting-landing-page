@@ -41,6 +41,7 @@ export default function TestimonialSection({ testimonials }: TestimonialSectionP
                   alt={`${testimonial.company} logo`}
                   width={80}
                   height={40}
+                  loading="lazy"
                   className="h-10 w-auto object-contain"
                 />
               </div>
