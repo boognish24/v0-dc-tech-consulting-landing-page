@@ -34,8 +34,9 @@ export default function LogoCarouselSeamless({ logos, speed = 50 }: LogoCarousel
       }
     }
 
-    // Add gaps (gap-16 = 4rem = 64px)
-    const gap = 64
+    // Get computed gap from CSS (responsive: gap-6 on mobile, gap-16 on desktop)
+    const computedStyle = window.getComputedStyle(track)
+    const gap = parseFloat(computedStyle.gap) || 24
     width += gap * singleSetCount
 
     setSetWidth(width)
@@ -49,7 +50,7 @@ export default function LogoCarouselSeamless({ logos, speed = 50 }: LogoCarousel
     <div className="relative overflow-hidden">
       <div
         ref={trackRef}
-        className="flex gap-16 whitespace-nowrap"
+        className="flex gap-6 md:gap-16 whitespace-nowrap"
         style={{
           animation: duration > 0 ? `scroll-seamless ${duration}s linear infinite` : "none",
         }}
@@ -63,7 +64,7 @@ export default function LogoCarouselSeamless({ logos, speed = 50 }: LogoCarousel
             height={60}
             loading="lazy"
             unoptimized
-            className="inline-block h-[60px] w-auto object-contain flex-shrink-0"
+            className="inline-block h-10 md:h-[60px] w-auto object-contain flex-shrink-0"
           />
         ))}
       </div>

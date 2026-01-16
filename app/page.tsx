@@ -199,8 +199,8 @@ export default function LandingPage() {
             </div>
 
             {/* Moved guide stack much higher to not bleed into logo carousel */}
-            <div className="flex justify-center -mt-96">
-              <div className="guide-stack relative w-[312px] perspective-[1200px]">
+            <div className="flex justify-center mt-8 md:-mt-96">
+              <div className="guide-stack relative w-[250px] md:w-[312px] perspective-[1200px]">
                 <Image
                   src="/images/titlepage.png"
                   alt="6 Steps guide cover"
