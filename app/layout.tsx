@@ -75,9 +75,38 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "DC Tech Consulting",
+    url: SITE_URL,
+    logo: `${SITE_URL}/images/dc-tech-logo.png`,
+    description:
+      "Technology Cost Management consulting helping CIOs, CFOs, and IT Executives gain clarity and control over technology costs.",
+    founder: {
+      "@type": "Person",
+      name: "Don Chester",
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Dallas",
+      addressRegion: "TX",
+      addressCountry: "US",
+    },
+    serviceType: [
+      "Technology Cost Management",
+      "IT Consulting",
+      "Telecom Expense Management",
+    ],
+  }
+
   return (
     <html lang="en">
       <body className={`${montserrat.variable} ${openSans.variable} font-sans`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>

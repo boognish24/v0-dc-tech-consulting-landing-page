@@ -535,39 +535,13 @@ export default function LandingPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-sm hover:text-[#42C5C9] transition-colors duration-200">
-                    Contact
+                  <Link href="#methodology" className="text-sm hover:text-[#42C5C9] transition-colors duration-200">
+                    Methodology
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-sm hover:text-[#42C5C9] transition-colors duration-200">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-sm hover:text-[#42C5C9] transition-colors duration-200">
-                    Careers
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-white mb-4">Legal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-sm hover:text-[#42C5C9] transition-colors duration-200">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-sm hover:text-[#42C5C9] transition-colors duration-200">
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-sm hover:text-[#42C5C9] transition-colors duration-200">
-                    Cookie Policy
+                  <Link href="#help" className="text-sm hover:text-[#42C5C9] transition-colors duration-200">
+                    Services
                   </Link>
                 </li>
               </ul>
