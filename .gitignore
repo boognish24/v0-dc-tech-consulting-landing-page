@@ -37,4 +37,10 @@ private/
 # Local only
 scripts/
 blob plan.md
+improvements.md
+leadmagnet.md
+
+# Tool configs
+.claude/
+.playwright-mcp/
 
