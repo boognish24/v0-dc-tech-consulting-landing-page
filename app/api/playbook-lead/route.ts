@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server"
 import { Resend } from "resend"
 import { PlaybookDeliveryEmail } from "@/app/emails/playbook-delivery"
+import { PlaybookFollowup1Email } from "@/app/emails/playbook-followup-1"
+import { PlaybookFollowup2Email } from "@/app/emails/playbook-followup-2"
 import { createHmac } from "crypto"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import { createToken } from "@/lib/tokens"
 
 export const runtime = "nodejs"
 
@@ -131,6 +134,10 @@ export async function POST(request: Request) {
     // Use playbook-specific download endpoint with file parameter
     const downloadUrl = `${origin}/api/download?token=${token}&file=playbook`
 
+    // Generate unsubscribe URL for follow-up emails (30-day expiry)
+    const unsubscribeToken = createToken(email, "unsubscribe", 24 * 30)
+    const unsubscribeUrl = `${origin}/unsubscribe?token=${unsubscribeToken}`
+
     const from = process.env.RESEND_FROM
     if (!from) throw new Error("Missing RESEND_FROM")
 
@@ -138,11 +145,16 @@ export async function POST(request: Request) {
       return rateLimitedJson({ success: true, message: "DRY_RUN: Email would be sent.", downloadUrl })
     }
 
-    // Send email (async, don't block download)
-    resend.emails.send({
+    // Send emails (async, don't block download)
+    const emailConfig = {
       from: `DC Tech Consulting <${from}>`,
-      to: email,
       reply_to: process.env.RESEND_REPLY_TO || "don@dctechconsulting.net",
+    }
+
+    // Email 1: Immediate delivery
+    resend.emails.send({
+      ...emailConfig,
+      to: email,
       subject: "Your Information Technology Inventory Playbook",
       react: PlaybookDeliveryEmail({
         siteUrl: origin,
@@ -150,7 +162,37 @@ export async function POST(request: Request) {
         firstName: firstName || undefined
       }),
     }).catch((err) => {
-      console.error("Failed to send playbook email:", err)
+      console.error("Failed to send playbook delivery email:", err)
+    })
+
+    // Email 2: Follow-up #1 (15 minutes later)
+    resend.emails.send({
+      ...emailConfig,
+      to: email,
+      subject: "The #1 reason IT projects go over budget",
+      react: PlaybookFollowup1Email({
+        siteUrl: origin,
+        firstName: firstName || undefined,
+        unsubscribeUrl,
+      }),
+      scheduledAt: "in 15 minutes",
+    }).catch((err) => {
+      console.error("Failed to schedule follow-up email 1:", err)
+    })
+
+    // Email 3: Follow-up #2 (30 minutes later)
+    resend.emails.send({
+      ...emailConfig,
+      to: email,
+      subject: "Ready to make your next IT project easier?",
+      react: PlaybookFollowup2Email({
+        siteUrl: origin,
+        firstName: firstName || undefined,
+        unsubscribeUrl,
+      }),
+      scheduledAt: "in 30 minutes",
+    }).catch((err) => {
+      console.error("Failed to schedule follow-up email 2:", err)
     })
 
     // Store lead in Resend Contacts (if audience configured)
